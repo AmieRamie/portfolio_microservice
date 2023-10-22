@@ -70,8 +70,8 @@ async def sell_stock(member_id:int,stock_id:str, item: trade_quantity_model):
     result = portfolio_resource.remove_holdings(member_id,stock_id,item.dict())
     return result
 
-@app.post("/api/portfolios/update_portfolio_value/{member_id}", response_model=List[PortfolioModel])
-async def sell_stock(member_id:int):
+@app.post("/api/portfolios/update_portfolio_value/{member_id}", response_model=dict)
+async def update_portfolio_value(member_id:int):
     #update the prices of every stock in their portfolio and get their portfolio value
     return {"message":"Still working on this endpoint"}
 
