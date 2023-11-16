@@ -20,8 +20,12 @@ class PortfolioResource():
 
     def add_portfolio(self):
         result = self.data_service.add_portfolio()
-        return result[-1]
-    
+        return result
+
+    def delete_portfolio(self):
+        result = self.data_service.delete_portfolio()
+        return result
+
     def get_leaderboard(self, leaderboard_size = 10) -> List[PortfolioModel]:
         result = self.data_service.get_portfolio()
         portfolio_df = pd.DataFrame(result)

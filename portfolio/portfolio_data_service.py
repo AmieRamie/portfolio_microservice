@@ -49,9 +49,19 @@ class portfoliosDataService():
     def add_portfolio(self) -> list:
         portfolio_df = pd.DataFrame(self.portfolios)
         new_member_id = max(portfolio_df['member_id']) + 1
-        self.portfolios.append({'member_id':new_member_id,'is_benchmark':False,'portfolio_value':0,'portfolio':[]})
+        new_portfolio = {'member_id':new_member_id,'is_benchmark':False,'portfolio_value':0,'portfolio':[]}
+        self.portfolios.append(new_portfolio)
         self._save()
-        return self.portfolios
+        return [new_portfolio]
+
+    def delete_portfolio(self,member_id:str) -> list:
+        portfolio_df = pd.DataFrame(self.portfolios)
+        removed_portfolio = portfolio_df[portfolio_df['member_id']==member_id].to_dict(orient='records')
+        portfolio_df = portfolio_df[portfolio_df['member_id']!=member_id].reset_index(drop = True)
+        self.portfolios = portfolio_df.to_dict(orient='records')
+        self._save()
+        return removed_portfolio
+
     def add_holdings(self, member_id: str, stock_id:str ,body:dict) -> list:
         portfolio_df = pd.DataFrame(self.portfolios)
         current_index = portfolio_df[portfolio_df['member_id']==member_id].index[0]
@@ -64,10 +74,10 @@ class portfoliosDataService():
                 portfolio.loc[portfolio['ticker']==stock_id,['num_shares']] = new_total_shares
                 portfolio.loc[portfolio['ticker']==stock_id,['avg_price']] = new_average_price_per_share
                 # Remember to update this when you connect to the stock microservice
-                # portfolio.loc[portfolio['ticker']==stock_id,['current_price']] = requests.get(f"api/stocks/{stock_id}/price")
+                portfolio.loc[portfolio['ticker']==stock_id,['current_price']] = body['price_per_share']
             else:
                 #Remember to update 'current_price':42 to the actual live price when you connect to the stock microservice
-                portfolio = pd.concat([portfolio,pd.DataFrame([{'ticker':stock_id,'num_shares':body['num_shares'],'avg_price':body['price_per_share'],'current_price':42}])])
+                portfolio = pd.concat([portfolio,pd.DataFrame([{'ticker':stock_id,'num_shares':body['num_shares'],'avg_price':body['price_per_share'],'current_price':body['price_per_share']}])])
         else:
             #Remember to update 'current_price':42 to the actual live price when you connect to the stock microservice
             portfolio = pd.DataFrame([{'ticker':stock_id,'num_shares':body['num_shares'],'avg_price':body['price_per_share'],'current_price':42}])        
@@ -86,7 +96,7 @@ class portfoliosDataService():
         new_total_shares = portfolio[portfolio['ticker'] == stock_id]['num_shares'].iloc[0]-body['num_shares']
         portfolio.loc[portfolio['ticker']==stock_id,['num_shares']] = new_total_shares
         # Remember to update this when you connect to the stock microservice
-        # portfolio.loc[portfolio['ticker']==stock_id,['current_price']] = requests.get(f"api/stocks/{stock_id}/price")
+        portfolio.loc[portfolio['ticker']==stock_id,['current_price']] = body['price_per_share']
         new_portfolio_value = float((portfolio['num_shares']*portfolio['current_price']).sum())
         new_portfolio = portfolio.to_dict(orient='records')
         portfolio_df.at[current_index,'portfolio'] = new_portfolio
@@ -94,3 +104,4 @@ class portfoliosDataService():
         self.portfolios = portfolio_df.to_dict(orient='records')
         self._save()
         return portfolio_df[portfolio_df['member_id']==member_id].to_dict(orient='records')
+    

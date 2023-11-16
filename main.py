@@ -60,6 +60,11 @@ async def add_portfolio():
     result = portfolio_resource.add_portfolio()
     return result
 
+@app.delete("/api/portfolios/delete_portfolio", response_model=List[PortfolioModel])
+async def delete_portfolio():
+    result = portfolio_resource.delete_portfolio()
+    return result
+
 @app.post("/api/portfolios/{member_id}/buy_stock/{stock_id}", response_model=List[PortfolioModel])
 async def buy_stock(member_id:int,stock_id:str, item: trade_quantity_model):
     result = portfolio_resource.add_holdings(member_id,stock_id,item.dict())
