@@ -14,11 +14,28 @@ class PortfolioComposition(BaseModel):
     avg_price: float
     current_price: float
 
+class data_returns(BaseModel):
+    status_code:int
+    text:str
+    body:dict
+
+
 class PortfolioModel(BaseModel):
     member_id: int
     is_benchmark: str
     portfolio_value: float
+    cash_balance: float
     portfolio: List[PortfolioComposition]
+
+class pagination_model(BaseModel):
+    data: List[PortfolioModel]
+    links: list
+    
+class non_pagination_model(BaseModel):
+    data: List[PortfolioModel]
+
+class sql_query_str(BaseModel):
+    query:str
 
 
 

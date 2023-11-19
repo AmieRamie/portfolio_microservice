@@ -14,22 +14,24 @@ class PortfolioResource():
         super().__init__()
         self.data_service = config["data_service"]
 
-    def get_portfolios(self, member_id: str = None, is_benchmark: bool = None) -> List[PortfolioModel]:
-        result = self.data_service.get_portfolio(member_id, is_benchmark)
+    def get_portfolios(self, query, limit, page) -> List[PortfolioModel]:
+        result = self.data_service.get_portfolio(query, limit, page)
+        return result
+    def update_portfolio_value(self,member_id):
+        result = self.data_service.update_portfolio_value(member_id)
         return result
 
-    def add_portfolio(self):
-        result = self.data_service.add_portfolio()
+    def add_portfolio(self,new_member_id):
+        result = self.data_service.add_portfolio(new_member_id)
         return result
 
-    def delete_portfolio(self):
-        result = self.data_service.delete_portfolio()
+    def delete_portfolio(self,member_id):
+        result = self.data_service.delete_portfolio(member_id)
         return result
 
     def get_leaderboard(self, leaderboard_size = 10) -> List[PortfolioModel]:
-        result = self.data_service.get_portfolio()
-        portfolio_df = pd.DataFrame(result)
-        return portfolio_df.sort_values(by = ['portfolio_value'], ascending = [False]).iloc[0:leaderboard_size].to_dict(orient='records')
+        result = self.data_service.get_leaderboard()
+        return result
 
     def add_holdings(self, member_id: str, stock_id:str ,body:dict) -> List[PortfolioModel]:
         result = self.data_service.add_holdings(member_id, stock_id,body)
