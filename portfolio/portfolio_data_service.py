@@ -71,10 +71,10 @@ class portfoliosDataService():
                         links.append({'rel':"prev",'href':f''})
                     else:
                         links.append({'rel':"prev",'href':f'/api/portfolios?limit={limit},page={page-1}'})
-                    if page<math.ceil(num_rows/limit):
-                        links.append({'rel':"next",'href':f''})
-                    else:
+                    if (page+1)<math.ceil(num_rows/limit):
                         links.append({'rel':"next",'href':f'/api/portfolios?limit={limit},page={page+1}'})
+                    else:
+                        links.append({'rel':"next",'href':f''})
                     return {'status_code':200,'text':'success!','body':{'data':all_portfolios,'links':links}}
             except Exception as e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
