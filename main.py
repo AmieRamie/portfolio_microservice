@@ -58,7 +58,6 @@ async def get_leaderboard():
 async def get_specific_portfolio(query_str: str = None, limit: int = 25, page: int = 0):
     print(query_str, limit, page)
     result = portfolio_resource.get_portfolios(query_str, limit, page)
-    print(result)
     if result['status_code']!=200:
         raise HTTPException(status_code=result['status_code'], detail=result['text'])
     else:
@@ -68,7 +67,6 @@ async def get_specific_portfolio(query_str: str = None, limit: int = 25, page: i
 @app.put("/api/portfolios/add_portfolio/{new_member_id}", response_model=non_pagination_model)
 async def add_portfolio(new_member_id:int):
     result = portfolio_resource.add_portfolio(new_member_id)
-    print(result)
     if result['status_code']!=200:
         raise HTTPException(status_code=result['status_code'], detail=result['text'])
     else:
