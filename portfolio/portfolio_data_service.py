@@ -39,6 +39,7 @@ class portfoliosDataService():
 
 
     def get_portfolio(self, query: str, limit: int, page:int) -> data_returns:
+        db.conn.ping(reconnect=True)
         if limit>50:
             return {'status_code':500,'text':'limit exceeded. Max number of portfolios per page is 50','body':{}}
         else:
@@ -83,6 +84,7 @@ class portfoliosDataService():
 
     
     def get_leaderboard(self)->data_returns:
+        db.conn.ping(reconnect=True)
         top_10_portfolios_query = "SELECT *, (portfolio_value + cash_balance) AS sum_columns FROM all_portfolio_info ORDER BY sum_columns DESC LIMIT 10"
         top_10_portfolios = pd.read_sql_query(top_10_portfolios_query, db.conn)
         top_10_member_ids = ','.join(map(str,list(top_10_portfolios['member_id'])))
@@ -98,6 +100,7 @@ class portfoliosDataService():
         #     all_portfolios.append(portfolio_dict)
         return {'status_code':200,'text':'success!','body':{'data':all_portfolios}}
     def update_portfolio_value(self,member_id:int) -> data_returns:
+        db.conn.ping(reconnect=True)
         try:
             query = f"SELECT DISTINCT ticker FROM all_holdings WHERE member_id = {member_id}"
             cursor_val = db.conn.cursor()
@@ -126,6 +129,7 @@ class portfoliosDataService():
 
 
     def add_portfolio(self, member_id:int) -> data_returns:
+        db.conn.ping(reconnect=True)
         try:
             db_cursor = db.conn.cursor()
             check_query = "SELECT EXISTS(SELECT 1 FROM all_portfolio_info WHERE member_id = %s)"
@@ -149,6 +153,7 @@ class portfoliosDataService():
             return {'status_code':500,'text': str(e),'body':{}}
 
     def delete_portfolio(self,member_id:str) -> list:
+        db.conn.ping(reconnect=True)
         try:
             query = f"SELECT * FROM all_holdings WHERE member_id = {member_id}"
             current_holdings = pd.read_sql_query(query, db.conn)
@@ -170,6 +175,7 @@ class portfoliosDataService():
 
 
     def add_holdings(self, member_id: str, stock_id:str ,body:dict) -> list:
+        db.conn.ping(reconnect=True)
         try:
             current_price = body['price_per_share']
             num_shares = body['num_shares']
@@ -248,6 +254,7 @@ class portfoliosDataService():
 
     
     def remove_holdings(self, member_id: str, stock_id:str ,body:dict) -> list:
+        db.conn.ping(reconnect=True)
         try:
             current_price = body['price_per_share']
             num_shares_sold = body['num_shares']
